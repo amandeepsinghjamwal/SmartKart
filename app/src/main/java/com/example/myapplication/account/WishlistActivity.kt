@@ -46,7 +46,6 @@ class WishlistActivity : AppCompatActivity(){
         }
     }
 
-
     override fun onResume() {
         super.onResume()
         binding.overlay.visibility=View.VISIBLE
