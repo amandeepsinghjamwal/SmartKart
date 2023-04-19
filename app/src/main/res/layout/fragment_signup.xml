@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/signupSnack"
+    tools:context=".entry.SignupFragment"
+    >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:fillViewport="true"
+        android:layout_height="match_parent"
+        >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="320dp"
+                android:src="@drawable/smartkart_logo"
+                tools:ignore="ContentDescription" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardElevation="30dp"
+            app:cardCornerRadius="30dp"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                >
+        <TextView
+            android:textSize="32sp"
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/SignUp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
+            android:gravity="center_horizontal"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:maxWidth="380dp"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            >
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/signupName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/Name"
+                android:inputType="text"
+                android:maxLines="1"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:maxWidth="380dp"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            >
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/signupNumber"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/MobileNumber"
+                android:inputType="number"
+                android:maxLines="1"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:maxWidth="380dp"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            >
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/signUpEmail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/Email"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:maxWidth="380dp"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            app:passwordToggleEnabled="true"
+            >
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/signupPassword"
+                android:paddingEnd="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/Password"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:maxWidth="380dp"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            app:passwordToggleEnabled="true"
+
+            >
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/signupCnfrmPassword"
+                android:paddingEnd="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/CnfrmPassword"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp"
+            >
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/signupBtn"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/SignUp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_shape"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif"
+            />
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="20dp"
+                android:visibility="visible"
+                />
+        </RelativeLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

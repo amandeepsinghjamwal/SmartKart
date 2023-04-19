@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".entry.LoginFragment"
+    android:id="@+id/loginFrag"
+    >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        >
+    <LinearLayout
+        android:id="@+id/logoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="320dp"
+        android:src="@drawable/smartkart_logo"
+        tools:ignore="ContentDescription" />
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="30dp"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+        <TextView
+            android:layout_marginTop="25dp"
+            android:layout_width="match_parent"
+            android:fontFamily="@font/poppins_medium"
+            android:layout_height="wrap_content"
+            android:text="@string/welcome"
+            android:textColor="@color/black"
+            android:textSize="32sp"
+            android:gravity="center_horizontal"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+
+            >
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
+                android:maxWidth="380dp"
+                >
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/emailFieldLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/Email"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    tools:ignore="dpeakableTextPresentCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                app:errorIconDrawable="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginHorizontal="15dp"
+                app:passwordToggleEnabled="true"
+                android:maxWidth="380dp"
+                >
+
+                <androidx.appcompat.widget.AppCompatEditText
+
+                    android:id="@+id/passwordFieldLogin"
+                    android:paddingEnd="40dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/Password"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    tools:ignore="dpeakableTextPresentCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/forgotPassowrd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/forgot_password"
+                android:gravity="end"
+                android:textSize="12dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/black"
+                />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+        <com.google.android.material.button.MaterialButton
+
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/loginBtn"
+            android:fontFamily="sans-serif"
+            android:background="@drawable/button_shape"
+            android:text="@string/login"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
+            <ProgressBar
+                android:id="@+id/buttonProgressBar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="20dp"
+                android:visibility="visible"
+                />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/toSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_user"
+            android:textSize="12dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/poppins_regular"
+            />
+    </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

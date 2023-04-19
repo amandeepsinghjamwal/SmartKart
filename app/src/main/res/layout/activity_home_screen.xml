@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".home.HomeScreen"
+    android:id="@+id/snackbarView"
+    >
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="1dp"
+        >
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
+            android:paddingHorizontal="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottom_end_layout"
+            />
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:background="#4D000000"
+            android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true"
+            />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_above="@id/bottom_end_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            />
+<LinearLayout
+    android:id="@+id/bottom_end_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_alignParentBottom="true"
+    android:background="@drawable/bottom_style_home"
+    >
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_width="match_parent"
+        android:id="@+id/bottomNav"
+        android:layout_height="50dp"
+        app:menu="@menu/bottom_menu"
+        />
+
+</LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

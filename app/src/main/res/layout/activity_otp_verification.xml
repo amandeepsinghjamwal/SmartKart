@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".entry.OtpVerificationActivity"
+    android:id="@+id/otpScreenView"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp"
+        android:gravity="center_horizontal"
+        >
+
+
+        <ImageView
+
+            android:layout_width="wrap_content"
+            android:layout_height="268dp"
+            android:layout_marginTop="50dp"
+            android:src="@drawable/otp"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:layout_marginTop="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:text="@string/verify"
+            android:gravity="center_horizontal"
+            />
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/enter_otp"
+            android:gravity="center_horizontal"
+            />
+        <TextView
+            android:id="@+id/emailHere"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Email"
+            android:textSize="15sp"
+            android:gravity="center_horizontal"
+            />
+        <in.aabhasjindal.otptextview.OtpTextView
+            android:id="@+id/otpVieww"
+            android:layout_marginTop="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:height="40dp"
+            app:bar_active_color="@color/teal_200"
+            android:textColor="@color/teal_700"
+            app:width="40dp"
+            app:bar_enabled="true"
+            app:bar_height="2dp"
+            app:length="4"
+            app:otp_text_size="24dp"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView
+            android:id="@+id/resendOtpButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/resendOtp"
+            android:gravity="center"
+            android:textColor="@color/teal_700"
+            />
+    </LinearLayout>
+
+    </ScrollView>
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:background="#4D000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:clickable="true"
+        android:layout_centerInParent="true"
+        android:focusable="true" />
+</RelativeLayout>
