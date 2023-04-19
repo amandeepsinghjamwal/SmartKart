@@ -67,7 +67,7 @@
     <string name="otp_sent">OTP sent</string>
     <string name="otp_resend">Resend OTP</string>
     <string name="hi">Hi %1$s</string>
-
+    <string name="About">About this product</string>
 
 
 </resources>
