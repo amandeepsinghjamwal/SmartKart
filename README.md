@@ -1,4 +1,4 @@
-# SmartKart
+# SmartKart 🛒
 
 SmartKart is an Android e-commerce application made to order products online while sitting at home without any hassle.
 
@@ -13,6 +13,6 @@ Add to cart feature
 Add to wishlist feature
 
 
-## Contribute
+## Contribute💙
 
 All fixes, Improvements and features are welcomed
