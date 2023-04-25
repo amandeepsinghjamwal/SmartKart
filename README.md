@@ -2,7 +2,7 @@
 
 SmartKart is an Android e-commerce application made to order products online while sitting at home without any hassle.
 
-SmartKart is built with kotlin and material components are used in UI. 
+SmartKart is built with kotlin, followed mvvm architecture and material components are used in UI. 
 
 
 ## Features
