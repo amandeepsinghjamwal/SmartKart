@@ -8,8 +8,11 @@ SmartKart is built with kotlin and material components are used in UI.
 ## Features
 
 Authentication
+
 Placing order
+
 Add to cart feature
+
 Add to wishlist feature
 
 
