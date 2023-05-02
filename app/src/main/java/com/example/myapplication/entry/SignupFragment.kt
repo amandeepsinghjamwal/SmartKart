@@ -1,6 +1,6 @@
 package com.example.myapplication.entry
 
-import android.content.res.Configuration
+
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -128,16 +128,7 @@ class SignupFragment : Fragment() {
                 }
             })
     }
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
-            binding.logo.visibility=View.GONE
 
-        }
-        else if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            binding.logo.visibility=View.VISIBLE
-        }
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

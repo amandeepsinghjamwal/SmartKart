@@ -64,8 +64,10 @@
                     android:layout_marginStart="15dp"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/profile_image"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/user2"
+                    android:src="@drawable/account_circle"
                     android:theme="@style/circleImageView"
                     tools:ignore="ContentDescription" />
                 <LinearLayout
@@ -347,114 +349,4 @@
         android:layout_centerInParent="true"
         android:visibility="gone"
         />
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#4D000000"
-        android:visibility="gone"
-        android:id="@+id/profile_details_view"
-        >
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_centerInParent="true"
-            app:cardCornerRadius="20dp"
-
-            >
-            <LinearLayout
-                android:padding="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:fontFamily="@font/poppins_regular"
-                    android:textSize="25dp"
-                    android:textStyle="bold"
-                    android:text="@string/user_details"
-                    />
-                <ImageView
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/img"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    >
-                    <TextView
-                        android:layout_weight="0.4"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        android:text="@string/name"
-                        />
-                    <TextView
-                        android:id="@+id/user_name_card"
-                        android:layout_weight="0.7"
-                        android:layout_width="0dp"
-                        android:maxLines="1"
-                        android:layout_height="wrap_content"
-                        android:textSize="18dp"
-                        tools:text="username"
-                        android:textColor="@color/black"
-                        />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    >
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="0.4"
-                        android:textStyle="bold"
-                        android:layout_height="wrap_content"
-                        android:textSize="20dp"
-                        android:text="@string/email"
-                        />
-                    <TextView
-                        android:id="@+id/user_email_card"
-                        android:layout_width="0dp"
-                        android:layout_weight="0.7"
-                        android:layout_height="wrap_content"
-                        android:textSize="18dp"
-                        android:text="@string/price"
-                        android:textColor="@color/black"
-                        />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    >
-                    <TextView
-                        android:layout_weight="0.4"
-                        android:layout_width="0dp"
-                        android:textStyle="bold"
-                        android:layout_height="wrap_content"
-                        android:textSize="20dp"
-                        android:text="@string/mob_no"
-                        />
-                    <TextView
-                        android:id="@+id/user_number_card"
-                        android:layout_width="0dp"
-                        android:layout_weight="0.7"
-                        android:layout_height="wrap_content"
-                        android:textSize="18dp"
-                        android:text="@string/quantity"
-                        android:textColor="@color/black"
-                        />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-    </RelativeLayout>
 </RelativeLayout>

@@ -4,26 +4,37 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import coil.load
 import com.example.myapplication.ApplicationClass
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentProfileBinding
-
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 class ProfileFragment : Fragment() {
     private var _binding:FragmentProfileBinding ?= null
     private val binding get() =_binding!!
+    private lateinit var imagePickerActivityResult: ActivityResultLauncher<Intent>
+    private val storageRef = Firebase.storage.reference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding= FragmentProfileBinding.inflate(inflater,container,false)
+        val uid=ApplicationClass.sharedPreferences!!.getString("userId","email").toString()
+        val name=ApplicationClass.sharedPreferences!!.getString("Name","User").toString()
+        val email=ApplicationClass.sharedPreferences!!.getString("Email","User").toString()
+        val mobileNumber=ApplicationClass.sharedPreferences!!.getString("MobileNo","User").toString()
 
         binding.myOrders.setOnClickListener{
             (activity as HomeScreen).gotoMyOrders()
@@ -34,6 +45,22 @@ class ProfileFragment : Fragment() {
         binding.changePassword.setOnClickListener {
             (activity as HomeScreen).gotoResetPassword()
         }
+        imagePickerActivityResult=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
+            if(result!=null){
+                val imageUri: Uri? = result.data?.data
+                if(imageUri!=null){
+                    val uploadTask = storageRef.child("user/pictures/$uid").putFile(imageUri)
+                    uploadTask.addOnSuccessListener {
+                        storageRef.child("user/pictures/$uid").downloadUrl.addOnSuccessListener {
+                            binding.profileImage.load(it)
+                        }
+                    }
+                }
+            }
+            else{
+                Log.e("failure","fasd")
+            }
+        }
         binding.logOut.setOnClickListener{
 
             (activity as HomeScreen).showAlert("Log Out","Do you really want to log out of device?"){
@@ -43,6 +70,7 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if((activity as HomeScreen).checkPermission() && ApplicationClass.sharedPreferences!!.getBoolean("Notification",false)){
                 binding.notificationsButton.isChecked = true
@@ -53,7 +81,12 @@ class ProfileFragment : Fragment() {
                 ApplicationClass.editor!!.putBoolean("Notification", false).apply()
             }
         }
+        storageRef.child("user/pictures/$uid").downloadUrl.addOnSuccessListener {
+            binding.profileImage.load(it)
+        }
+            .addOnFailureListener{
 
+            }
         binding.notificationsButton.isChecked =
             ApplicationClass.sharedPreferences!!.getBoolean("Notification",false)
         binding.notificationsButton.setOnClickListener{
@@ -78,21 +111,7 @@ class ProfileFragment : Fragment() {
                 binding.notificationsButton.isChecked=true
             }
         }
-        binding.profileDetails.setOnClickListener {
-            binding.profileDetailsView.visibility=View.VISIBLE
-        }
-        binding.profileDetailsView.setOnClickListener{
-            binding.profileDetailsView.visibility=View.GONE
-        }
-        val uid=ApplicationClass.sharedPreferences!!.getString("userId","email").toString()
 
-        val name=ApplicationClass.sharedPreferences!!.getString("Name","User").toString()
-        val email=ApplicationClass.sharedPreferences!!.getString("Email","User").toString()
-        val mobileNumber=ApplicationClass.sharedPreferences!!.getString("MobileNo","User").toString()
-
-        binding.userNameCard.text=name
-        binding.userEmailCard.text=email
-        binding.userNumberCard.text=mobileNumber
         binding.userName.text=getString(R.string.hi,name)
         binding.userEmail.text=email
         binding.raiseIssue.setOnClickListener {
@@ -102,6 +121,11 @@ class ProfileFragment : Fragment() {
                 data=Uri.parse(uriText)
             }
                 requireContext().startActivity(Intent.createChooser(i,"Choose"))
+        }
+        binding.profileImage.setOnClickListener{
+            val galleryIntent = Intent(Intent.ACTION_PICK)
+            galleryIntent.type="image/*"
+            imagePickerActivityResult.launch(galleryIntent)
         }
         return  binding.root
     }
