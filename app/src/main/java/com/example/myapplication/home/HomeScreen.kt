@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -103,6 +104,7 @@ class HomeScreen : AppCompatActivity() {
             true
         }
     }
+
     private fun replaceFragment(fragment:Fragment){
 
         val fragmentTransaction = fragmentManager.beginTransaction()

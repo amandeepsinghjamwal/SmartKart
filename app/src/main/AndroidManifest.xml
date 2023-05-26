@@ -37,9 +37,11 @@
             android:exported="false" />
         <activity
             android:name=".home.HomeScreen"
+            android:configChanges="uiMode"
             android:screenOrientation="portrait"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".entry.SplashScreenActivity"
             android:exported="true" >
@@ -52,7 +54,6 @@
             android:windowSoftInputMode="adjustPan"
             android:name=".MainActivity"
             android:exported="false">
-
         </activity>
     </application>
 

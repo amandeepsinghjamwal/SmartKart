@@ -81,7 +81,7 @@ class SignupFragment : Fragment() {
                 "(?=.*[a-zA-Z])" +      //any letter
                 "(?=.*[@#$%^&+=])" +    //at least 1 special character
                 "(?=\\S+$)" +           //no white spaces
-                ".{6,}" +               //at least 8 characters
+                ".{6,}" +               //at least 6 characters
                 "$")
 
         if(!passwordRegex.matcher(password).matches()){
@@ -105,13 +105,12 @@ class SignupFragment : Fragment() {
                     call: Call<RegisterResponseData>,
                     response: Response<RegisterResponseData>
                 ) {
-                    Log.e("New",response.body()!!.data!!._id)
+
                         if(response.code()==201){
                             binding.signupBtn.isEnabled=true
                             Snackbar.make(binding.signupSnack,"Please verify your email to proceed",Snackbar.LENGTH_SHORT).show()
                             if(response.body()!!.status==1){
                                 binding.progressBar.visibility=View.GONE
-
                                 (activity as MainActivity).gotoOtpScreen(response.body()!!.data!!._id,false,response.body()!!.data!!.emailId)
                             }
                         }

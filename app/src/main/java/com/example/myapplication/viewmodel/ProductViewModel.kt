@@ -23,47 +23,55 @@ class ProductViewModel : ViewModel() {
     var _cartResponseData = MutableLiveData<List<CartResponseData>>()
     val cartResponseData: LiveData<List<CartResponseData>> get() = _cartResponseData
 
-    var _totalPrice= MutableLiveData<Double>()
-    val totalPrice:LiveData<Double> get()= _totalPrice
+    var _totalPrice = MutableLiveData<Double>()
+    val totalPrice: LiveData<Double> get() = _totalPrice
 
-    var _orderedProducts= MutableLiveData<List<OrderHistoryProductsData>>()
-    val orderedProducts:LiveData<List<OrderHistoryProductsData>> get() = _orderedProducts
+    var _orderedProducts = MutableLiveData<List<OrderHistoryProductsData>>()
+    val orderedProducts: LiveData<List<OrderHistoryProductsData>> get() = _orderedProducts
 
-
-    fun loadProductData():LiveData<Int> {
+    /**
+     * Loads product data in mainfragment (HomeScreen)
+     * */
+    fun loadProductData(): LiveData<Int> {
         val _response = MutableLiveData<Int>()
         val response: LiveData<Int> = _response
         if (ApplicationClass.sharedPreferences!!.contains("JWTtoken")) {
             viewModelScope.launch(Dispatchers.IO) {
                 val tokenJWT =
                     ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
-                Log.e("JWTTOKEN",tokenJWT)
-                Log.e("Email",ApplicationClass.sharedPreferences!!.getString("Email", null).toString())
+                Log.e("JWTTOKEN", tokenJWT)
+                Log.e(
+                    "Email",
+                    ApplicationClass.sharedPreferences!!.getString("Email", null).toString()
+                )
                 val callApi = ApplicationApi.retrofitService.getAllProducts("Bearer $tokenJWT")
                 callApi.enqueue(object : Callback<ProductResponseData> {
                     override fun onResponse(
                         call: Call<ProductResponseData>,
                         response: Response<ProductResponseData>
                     ) {
-                        Log.e("tokem",response.code().toString())
-                        _response.value=response.code()
+                        Log.e("tokem", response.code().toString())
+                        _response.value = response.code()
                         if (response.code() == 200) {
-                            _response.value=response.code()
+                            _response.value = response.code()
                             _productList.value = response.body()!!.data
                             Log.e("RESPONSEDATA", response.body()!!.data.toString())
                         }
 
                     }
+
                     override fun onFailure(call: Call<ProductResponseData>, t: Throwable) {
                         Log.e("RESPONSEDATA", "FAILURE")
-                        _response.value=0
+                        _response.value = 0
                     }
                 })
             }
         }
         return response
     }
-
+    /**
+     * loads wishlist data
+     * */
     fun loadWishlistData() {
         if (ApplicationClass.sharedPreferences!!.contains("JWTtoken")) {
             val tokenJWT =
@@ -77,12 +85,13 @@ class ProductViewModel : ViewModel() {
                         response: Response<WishlistResponse>
                     ) {
                         if (response.code() == 200) {
-                            _wishlistProducts.value=response.body()!!.data!!
+                            _wishlistProducts.value = response.body()!!.data!!
                         }
                         if (response.code() == 400) {
                             Log.e("Wishlist@", product.toString())
                         }
                     }
+
                     override fun onFailure(call: Call<WishlistResponse>, t: Throwable) {
                         Log.e("Wishlist@", product.toString() + "here " + tokenJWT)
                     }
@@ -91,38 +100,34 @@ class ProductViewModel : ViewModel() {
         }
     }
 
-
-
     fun cartResponseData() {
 
-        val data= emptyList<CartResponseData>()
+        val data = emptyList<CartResponseData>()
         if (ApplicationClass.sharedPreferences!!.contains("JWTtoken")) {
             val tokenJWT =
                 ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
             viewModelScope.launch(Dispatchers.IO) {
                 val callApi = ApplicationApi.retrofitService.getCartProducts("Bearer $tokenJWT")
-                callApi.enqueue(object : Callback<GetCartResponse>{
+                callApi.enqueue(object : Callback<GetCartResponse> {
 
                     override fun onFailure(call: Call<GetCartResponse>, t: Throwable) {
-                        Log.e("CARTRESPONSE","Failed")
+                        Log.e("CARTRESPONSE", "Failed")
                     }
 
                     override fun onResponse(
                         call: Call<GetCartResponse>,
                         response: Response<GetCartResponse>
                     ) {
-                        if(response.code()==200){
-                            if(response.body()!!.data!=null && response.body()!!.cartTotal!=null){
-                                _cartResponseData.value=response.body()!!.data!!
-                                _totalPrice.value= response.body()!!.cartTotal!!
-                            }
-                            else{
-                                _cartResponseData.value=data
-                                _totalPrice.value=0.0
+                        if (response.code() == 200) {
+                            if (response.body()!!.data != null && response.body()!!.cartTotal != null) {
+                                _cartResponseData.value = response.body()!!.data!!
+                                _totalPrice.value = response.body()!!.cartTotal!!
+                            } else {
+                                _cartResponseData.value = data
+                                _totalPrice.value = 0.0
                             }
                         }
                     }
-
                 })
             }
         }
@@ -144,7 +149,7 @@ class ProductViewModel : ViewModel() {
                 response: Response<AddToWishlistResponse>
             ) {
                 if (response.code() == 200) {
-                    if(response.body()!!.data!=null){
+                    if (response.body()!!.data != null) {
                         _response.value = response.body()!!.data!!._id
                     }
 
@@ -152,6 +157,7 @@ class ProductViewModel : ViewModel() {
                     _response.value = "fail"
                 }
             }
+
             override fun onFailure(call: Call<AddToWishlistResponse>, t: Throwable) {
                 _response.value = "fail"
             }
@@ -161,7 +167,7 @@ class ProductViewModel : ViewModel() {
 
     fun addProductToCart(pid: String?): LiveData<String> {
 
-        val addToCartObj= WatchlistRequestData(pid!!)
+        val addToCartObj = WatchlistRequestData(pid!!)
         val tokenJWT =
             ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
         val callApi =
@@ -174,7 +180,7 @@ class ProductViewModel : ViewModel() {
                 response: Response<AddtoCartResponse>
             ) {
                 if (response.code() == 201) {
-                    if(response.body()!!.data!=null){
+                    if (response.body()!!.data != null) {
                         _response.value = response.body()!!.data!!.cartId
                     }
 
@@ -182,6 +188,7 @@ class ProductViewModel : ViewModel() {
                     _response.value = "fail"
                 }
             }
+
             override fun onFailure(call: Call<AddtoCartResponse>, t: Throwable) {
                 _response.value = "fail"
             }
@@ -210,6 +217,7 @@ class ProductViewModel : ViewModel() {
                     _response.value = response.code()
                 }
             }
+
             override fun onFailure(call: Call<WatchListRemoveResponse>, t: Throwable) {
                 _response.value = 0
             }
@@ -217,10 +225,10 @@ class ProductViewModel : ViewModel() {
         return response
     }
 
-    fun removeFromCart(productId:String):LiveData<Int> {
+    fun removeFromCart(productId: String): LiveData<Int> {
         val _response = MutableLiveData<Int>()
         val response: LiveData<Int> = _response
-        Log.e("PRODID",productId)
+        Log.e("PRODID", productId)
         val removeFromCartObj = RemoveFromCartRequestData(productId)
         val tokenJWT =
             ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
@@ -228,90 +236,93 @@ class ProductViewModel : ViewModel() {
         val callApi =
             ApplicationApi.retrofitService.removeFromCart(removeFromCartObj, "Bearer $tokenJWT")
 
-        callApi.enqueue(object : Callback<WatchListRemoveResponse>{
+        callApi.enqueue(object : Callback<WatchListRemoveResponse> {
             override fun onResponse(
                 call: Call<WatchListRemoveResponse>,
                 response: Response<WatchListRemoveResponse>
             ) {
-                _response.value=response.code()
+                _response.value = response.code()
             }
 
             override fun onFailure(call: Call<WatchListRemoveResponse>, t: Throwable) {
-                _response.value=0
+                _response.value = 0
             }
         })
         return response
     }
 
 
-    fun increaseCount(productId:String):LiveData<Int>{
-        val _response= MutableLiveData<Int>()
-        val response:LiveData<Int> = _response
+    fun increaseCount(productId: String): LiveData<Int> {
+        val _response = MutableLiveData<Int>()
+        val response: LiveData<Int> = _response
 
-        val incCountObj= IncReqData(productId)
+        val incCountObj = IncReqData(productId)
         val tokenJWT =
             ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
-        val callApi= ApplicationApi.retrofitService.incProductCount(incCountObj,"Bearer $tokenJWT")
-        callApi.enqueue(object : Callback<IncrementResponseData>{
+        val callApi =
+            ApplicationApi.retrofitService.incProductCount(incCountObj, "Bearer $tokenJWT")
+        callApi.enqueue(object : Callback<IncrementResponseData> {
             override fun onResponse(
                 call: Call<IncrementResponseData>,
                 response: Response<IncrementResponseData>
             ) {
-                _response.value= response.code()
+                _response.value = response.code()
             }
 
             override fun onFailure(call: Call<IncrementResponseData>, t: Throwable) {
-                _response.value=0
+                _response.value = 0
             }
         })
         return response
     }
 
 
-    fun decreaseCount(productId:String):LiveData<Int>{
-        val _response= MutableLiveData<Int>()
-        val response:LiveData<Int> = _response
+    fun decreaseCount(productId: String): LiveData<Int> {
+        val _response = MutableLiveData<Int>()
+        val response: LiveData<Int> = _response
 
-        val decCountObj= IncReqData(productId)
+        val decCountObj = IncReqData(productId)
         val tokenJWT =
             ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
-        val callApi= ApplicationApi.retrofitService.decProductCount(decCountObj,"Bearer $tokenJWT")
-        callApi.enqueue(object : Callback<IncrementResponseData>{
+        val callApi =
+            ApplicationApi.retrofitService.decProductCount(decCountObj, "Bearer $tokenJWT")
+        callApi.enqueue(object : Callback<IncrementResponseData> {
             override fun onResponse(
                 call: Call<IncrementResponseData>,
                 response: Response<IncrementResponseData>
             ) {
-                _response.value= response.code()
+                _response.value = response.code()
             }
 
             override fun onFailure(call: Call<IncrementResponseData>, t: Throwable) {
-                _response.value=0
+                _response.value = 0
             }
         })
         return response
     }
 
 
-    fun placeOrder(cartTotal: Double, cartId: String):LiveData<Int> {
+    fun placeOrder(cartTotal: Double, cartId: String): LiveData<Int> {
         Log.e("ERRRROR", "$cartId $cartTotal")
-        val _response= MutableLiveData<Int>()
-        val response:LiveData<Int> = _response
-        val placeOrderobj=PlaceOrderRequestData(cartId,cartTotal.toString())
-        val tokenJWT=ApplicationClass.sharedPreferences!!.getString("JWTtoken",null).toString()
+        val _response = MutableLiveData<Int>()
+        val response: LiveData<Int> = _response
+        val placeOrderobj = PlaceOrderRequestData(cartId, cartTotal.toString())
+        val tokenJWT = ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
         viewModelScope.launch(Dispatchers.IO) {
-            val callApi=ApplicationApi.retrofitService.placeOrder(placeOrderobj,"Bearer $tokenJWT")
+            val callApi =
+                ApplicationApi.retrofitService.placeOrder(placeOrderobj, "Bearer $tokenJWT")
             callApi.enqueue(object : Callback<PlaceOrderResponse> {
                 override fun onResponse(
                     call: Call<PlaceOrderResponse>,
                     response: Response<PlaceOrderResponse>
                 ) {
-                    Log.e("ERRRROR",response.code().toString())
-                    _response.value=response.code()
+                    Log.e("ERRRROR", response.code().toString())
+                    _response.value = response.code()
                     cartResponseData()
                 }
 
                 override fun onFailure(call: Call<PlaceOrderResponse>, t: Throwable) {
-                    _response.value=0
+                    _response.value = 0
                 }
 
             })
@@ -319,19 +330,21 @@ class ProductViewModel : ViewModel() {
         return response
     }
 
-    fun loadOrderedProducts(){
-        val tokenJWT=ApplicationClass.sharedPreferences!!.getString("JWTtoken",null).toString()
+    fun loadOrderedProducts() {
+        val tokenJWT = ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
         viewModelScope.launch(Dispatchers.IO) {
-            val callApi=ApplicationApi.retrofitService.getOrderList("Bearer $tokenJWT")
-            callApi.enqueue(object : Callback<OrderHistoryResponse>{
+            val callApi = ApplicationApi.retrofitService.getOrderList("Bearer $tokenJWT")
+            callApi.enqueue(object : Callback<OrderHistoryResponse> {
                 override fun onResponse(
                     call: Call<OrderHistoryResponse>,
                     response: Response<OrderHistoryResponse>
                 ) {
-                    if(response.code()==200){
-                        _orderedProducts.value=response.body()!!.data
+                    if (response.code() == 200) {
+
+                        _orderedProducts.value = response.body()!!.data
                     }
                 }
+
                 override fun onFailure(call: Call<OrderHistoryResponse>, t: Throwable) {
                 }
 
