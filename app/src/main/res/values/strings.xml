@@ -33,7 +33,7 @@
     <string name="category">Category</string>
     <string name="cart">Cart</string>
     <string name="total">Total</string>
-    <string name="placeorder">Place Order</string>
+    <string name="placeorder">continue to pay</string>
     <string name="addToCart">Add to cart</string>
     <string name="goToCart">Go to cart</string>
     <string name="buyNow">Buy now</string>
@@ -43,6 +43,13 @@
     <string name="CnfrmNewPassword">Confirm new password</string>
     <string name="recentOrders">Recent Orders</string>
     <string name="wishListTitle">Wishlist</string>
+    <string name="paymentTitle">Payment</string>
+    <string name="cards">Cards/Netbanking</string>
+    <string name="Upi">UPI</string>
+    <string name="cod">Cash on delivery</string>
+    <string name="place_order">Place order</string>
+    <string name="order_placed">Order placed successfully</string>
+    <string name="continue_shopping">continue shopping</string>
     <string name="name_custom">SmartKart</string>
     <string name="notifications">Notifications</string>
     <string name="oops">Cart is Empty</string>

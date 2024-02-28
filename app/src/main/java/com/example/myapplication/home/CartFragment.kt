@@ -1,6 +1,8 @@
 package com.example.myapplication.home
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.ApplicationClass
+import com.example.myapplication.PaymentActivity
 import com.example.myapplication.R
 import com.example.myapplication.adapter.CartAdapter
 import com.example.myapplication.databinding.FragmentCartBinding
@@ -81,7 +84,12 @@ class CartFragment : Fragment() {
 
         binding.placeOrderButton.setOnClickListener{
             binding.placeOrderButton.isEnabled=false
-            val data=viewModel.placeOrder(cartTotal,cartId)
+            val intent = Intent((activity as HomeScreen),PaymentActivity::class.java)
+            intent.putExtra("cart_total",cartTotal.toString())
+            intent.putExtra("cart_id", cartId)
+            Log.e("data",cartId + cartTotal.toString())
+            startActivity(intent)
+       /*     val data=viewModel.placeOrder(cartTotal,cartId)
             data.observe(viewLifecycleOwner){
                 if(it==201){
                     binding.progressBar.visibility=View.GONE
@@ -94,7 +102,7 @@ class CartFragment : Fragment() {
                     (activity as HomeScreen).showSnackBar("Something went wrong")
                     binding.placeOrderButton.isEnabled=true
                 }
-            }
+            }*/
         }
         return binding.root
     }
