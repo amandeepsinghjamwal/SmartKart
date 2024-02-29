@@ -50,7 +50,7 @@ class ProductViewActivity : AppCompatActivity() {
 
         binding.productImage.load(pImage)
         binding.productName.text = pName
-        binding.productDescription.text = pDesc
+        binding.productDescription.text = pDesc?.replace("\\\\n","\n")
         binding.price.text = getString(R.string.dollar, price)
         if (wishlistProductId != null) {
             binding.addToWishlist.setImageResource(R.drawable.wishlisted)

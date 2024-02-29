@@ -6,12 +6,13 @@ data class ProductDetails(
     val description: String,
     val price: String,
     val imageUrl: String,
-    val __v: Int?,
-    val createdAt: String?,
-    val updatedAt:String?,
-    val cartItemId:String?,
-    val quantity:Int?,
-    val watchListItemId:String?
+    val __v: Int? = null,
+    val createdAt: String? = null,
+    val updatedAt:String?=null,
+    var cartItemId:String?=null,
+    val quantity:Int?=null,
+    val watchListItemId:String?=null,
+    val isFirebaseProduct:Boolean?=null
 )
 {
     var watchListId:String?=null
