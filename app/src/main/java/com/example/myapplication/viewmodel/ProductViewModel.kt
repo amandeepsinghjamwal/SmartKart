@@ -2,9 +2,15 @@ package com.example.myapplication.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.*
+import androidx.room.Transaction
 import com.example.myapplication.ApplicationClass
 import com.example.myapplication.api.ApplicationApi
 import com.example.myapplication.api.models.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -16,6 +22,10 @@ class ProductViewModel : ViewModel() {
     var _productList = MutableLiveData<List<ProductDetails>>()
     val productList: LiveData<List<ProductDetails>>
         get() = _productList
+
+    var db = Firebase.firestore
+
+    val moshi = Moshi.Builder().build()
 
     var _wishlistProducts = MutableLiveData<List<WishlistResponseData>>()
     val wishlistProducts: LiveData<List<WishlistResponseData>> get() = _wishlistProducts
@@ -54,7 +64,8 @@ class ProductViewModel : ViewModel() {
                         _response.value = response.code()
                         if (response.code() == 200) {
                             _response.value = response.code()
-                            _productList.value = response.body()!!.data
+//                            _productList.value = response.body()!!.data
+                            getFirebaseProducts(response.body()!!.data)
                             Log.e("RESPONSEDATA", response.body()!!.data.toString())
                         }
 
@@ -69,6 +80,81 @@ class ProductViewModel : ViewModel() {
         }
         return response
     }
+
+    private fun getFirebaseProducts(data: List<ProductDetails>) {
+        val tempList = mutableListOf<ProductDetails>()
+        db.collection("products").get().addOnSuccessListener { snapshot ->
+
+            for (document in snapshot) {
+//                Log.e("Data received", document.data["all_products"].toString())
+                val productList = document?.get("all_products") as List<Map<String, Any>>
+                val products = productList.map {
+                    ProductDetails(
+                        _id = it["_id"] as String,
+                        description = it["description"] as String,
+                        imageUrl = it["imageUrl"] as String,
+                        price = (it["price"] as String),  // Assuming the price is stored as a double
+                        title = it["title"] as String,
+                        isFirebaseProduct = it["isFirebaseProduct"] as Boolean
+                    )
+                }
+                val userId = ApplicationClass.sharedPreferences?.getString("userId", "")
+                val userDocRef: DocumentReference =
+                    db.collection("users").document(userId ?: "User")
+                /*db.runTransaction { transaction ->
+                    val userDoc = transaction.get(userDocRef)
+                    if (userDoc.exists()) {
+                        userDocRef.get().addOnSuccessListener {
+                            try {
+                                val result = it.data?.get("cart") as List<HashMap<String, String>>
+                                result.forEach { map ->
+                                    products.forEach { prod ->
+                                        if (prod._id == map["productId"]) {
+                                            prod.cartItemId = "firebaseCart"
+                                            prod.isInCart = true
+                                        }
+                                    }
+                                }
+                                tempList.addAll(products)
+                                tempList.addAll(data)
+                                _productList.value = tempList.shuffled()
+                            } catch (e: Exception) {
+                                tempList.addAll(products)
+                                tempList.addAll(data)
+                                _productList.value = tempList.shuffled()
+                                Log.e("exc", e.message.toString())
+                            }
+                        }.addOnFailureListener {
+                            tempList.addAll(products)
+                            tempList.addAll(data)
+                            _productList.value = tempList.shuffled()
+                            Log.e("exc", it.message.toString())
+                        }
+                    } else {
+                        tempList.addAll(products)
+                        tempList.addAll(data)
+                        _productList.value = tempList.shuffled()
+                        Log.e("exc", _productList.value.toString())
+                    }
+                }*/
+
+                tempList.addAll(products)
+                tempList.addAll(data)
+                _productList.value = tempList.shuffled()
+
+            }
+
+        }.addOnFailureListener {
+            tempList.addAll(data)
+            _productList.value = tempList.shuffled()
+            Log.e("Data received", it.toString())
+        }.addOnCanceledListener {
+            tempList.addAll(data)
+            _productList.value = tempList.shuffled()
+            Log.e("Data received", "it.toString()")
+        }
+    }
+
     /**
      * loads wishlist data
      * */
@@ -120,9 +206,11 @@ class ProductViewModel : ViewModel() {
                     ) {
                         if (response.code() == 200) {
                             if (response.body()!!.data != null && response.body()!!.cartTotal != null) {
-                                _cartResponseData.value = response.body()!!.data!!
+                                getFirebaseCartProducts(response.body()!!.data!!)
+//                                _cartResponseData.value = response.body()!!.data!!
                                 _totalPrice.value = response.body()!!.cartTotal!!
                             } else {
+//                                Log.e("Response body")
                                 _cartResponseData.value = data
                                 _totalPrice.value = 0.0
                             }
@@ -131,6 +219,51 @@ class ProductViewModel : ViewModel() {
                 })
             }
         }
+    }
+
+    private fun getFirebaseCartProducts(data: List<CartResponseData>) {
+        val tempList = mutableListOf<CartResponseData>()
+        val userId = ApplicationClass.sharedPreferences?.getString("userId", "")
+        val userDocRef: DocumentReference =
+            db.collection("users").document(userId ?: "User")
+        db.runTransaction { transaction ->
+            val userDoc = transaction.get(userDocRef)
+            if (userDoc.exists()) {
+                userDocRef.get().addOnSuccessListener {
+                    try {
+                        val firebaseProductList = mutableListOf<CartResponseData>()
+                        val result = it.data?.get("cart") as List<Map<String, Any>>
+                        val jsonAdapter: JsonAdapter<FirebaseCartProduct> = moshi.adapter(FirebaseCartProduct::class.java)
+
+                        val product: FirebaseCartProduct? = jsonAdapter.fromJsonValue(result)
+                        result.forEach { map ->
+                            firebaseProductList.add(
+                                CartResponseData(
+                                    null,
+                                    null,
+                                    null,
+                                    productDetails = product!!.product,
+                                    quantity =product.count.toInt(),
+                                    null
+                                )
+                            )
+                        }
+                        tempList.addAll(data)
+                        tempList.addAll(firebaseProductList)
+                        _cartResponseData.value = tempList
+                    } catch (e: Exception) {
+                        tempList.addAll(data)
+                        _cartResponseData.value = tempList
+                        Log.e("exc", e.message.toString())
+                    }
+                }.addOnFailureListener {
+                    tempList.addAll(data)
+                    _cartResponseData.value = tempList
+                    Log.e("exc", it.message.toString())
+                }
+            }
+        }
+
     }
 
 
@@ -194,6 +327,39 @@ class ProductViewModel : ViewModel() {
             }
         })
         return response
+    }
+
+    fun addProductToFirebaseCart(productDetails: ProductDetails, onComplete: (Boolean) -> Unit) {
+
+        val userId = ApplicationClass.sharedPreferences?.getString("userId", "")
+        val userDocRef: DocumentReference = db.collection("users").document(userId ?: "User")
+
+        db.runTransaction { transaction ->
+            val userDoc = transaction.get(userDocRef)
+            if (!userDoc.exists()) {
+                val newUserDoc = hashMapOf(
+                    "cart" to listOf(mapOf("product" to productDetails, "count" to 1))
+                    // Add other fields as needed
+                )
+                transaction.set(userDocRef, newUserDoc)
+            } else {
+                val currentCart = userDoc.get("cart") as? List<Map<String, Any>> ?: emptyList()
+
+                // Add the new product to the cart
+                val newCart =
+                    currentCart + mapOf("productId" to productDetails, "count" to 1)
+                // Update the cart field in the document
+                transaction.update(userDocRef, "cart", newCart)
+            }
+
+            // Transaction success
+            true
+        }.addOnSuccessListener {
+            onComplete(true)
+        }.addOnFailureListener {
+            Log.e("Failure exception", it.message.toString())
+            onComplete(false)
+        }
     }
 
     fun removeFromWishlist(pid: String?): LiveData<Int> {
@@ -364,3 +530,5 @@ class ProductViewModel : ViewModel() {
 //        throw IllegalArgumentException("Unknown ViewModel class")
 //    }
 //}
+
+data class FirebaseCartProduct(val count: String, val product: ProductDetails)
