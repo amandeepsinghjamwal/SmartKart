@@ -10,7 +10,7 @@ data class ProductDetails(
     val createdAt: String? = null,
     val updatedAt:String?=null,
     var cartItemId:String?=null,
-    val quantity:Int?=null,
+    var quantity:Int?=null,
     val watchListItemId:String?=null,
     val isFirebaseProduct:Boolean?=null
 )

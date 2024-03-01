@@ -175,6 +175,7 @@ class ProductViewModel : ViewModel() {
                         response: Response<WishlistResponse>
                     ) {
                         if (response.code() == 200) {
+                            getFirebaseWishlistProducts()
                             _wishlistProducts.value = response.body()!!.data!!
                         }
                         if (response.code() == 400) {
@@ -190,8 +191,14 @@ class ProductViewModel : ViewModel() {
         }
     }
 
-    fun cartResponseData() {
+    private fun getFirebaseWishlistProducts():List<ProductDetails> {
+        val list = mutableListOf<ProductDetails>()
 
+        return list
+    }
+
+    fun cartResponseData() {
+        firebaseTotal = 0.0
         val data = emptyList<CartResponseData>()
         if (ApplicationClass.sharedPreferences!!.contains("JWTtoken")) {
             val tokenJWT =
@@ -216,6 +223,7 @@ class ProductViewModel : ViewModel() {
                             } else {
 //                                Log.e("Response body")
                                 _cartResponseData.value = data
+                                getFirebaseCartProducts(emptyList())
                                 _totalPrice.value = 0.0
                             }
                         }
@@ -248,17 +256,18 @@ class ProductViewModel : ViewModel() {
                                     imageUrl = (productMap["imageUrl"] as String),
                                     price = (productMap["price"] as String),  // Assuming the price is stored as a double
                                     title = productMap["title"] as String,
-                                    isFirebaseProduct = productMap["isFirebaseProduct"] as Boolean?
+                                    isFirebaseProduct = productMap["firebaseProduct"] as Boolean?,
+                                    quantity = (productMap["quantity"] as Long).toInt()
                                 )
-                                firebaseTotal += (product.price.toDouble() + map["count"].toString()
-                                    .toDouble())
+                                firebaseTotal += (product.price.toDoubleOrNull()?:0.0) * (product.quantity.toString()
+                                    .toDoubleOrNull()?:1.0)
                                 firebaseProductList.add(
                                     CartResponseData(
                                         "null",
                                         "null",
-                                        10.99,
+                                        (product.price.toDoubleOrNull()?:0.0) * (product.quantity.toString().toDoubleOrNull()?:0.0),
                                         productDetails = product,
-                                        quantity = 1,
+                                        quantity = product.quantity,
                                         userId
                                     )
                                 )
@@ -285,7 +294,6 @@ class ProductViewModel : ViewModel() {
 
 
     fun addToWishlist(pid: String?): LiveData<String> {
-
         val watchListObj = WatchlistRequestData(pid!!)
         val tokenJWT =
             ApplicationClass.sharedPreferences!!.getString("JWTtoken", null).toString()
@@ -355,7 +363,7 @@ class ProductViewModel : ViewModel() {
             val userDoc = transaction.get(userDocRef)
             if (!userDoc.exists()) {
                 val newUserDoc = hashMapOf(
-                    "cart" to listOf(mapOf("product" to productDetails, "count" to 1))
+                    "cart" to listOf(mapOf("product" to productDetails))
                 )
                 transaction.set(userDocRef, newUserDoc)
             } else {
@@ -363,7 +371,7 @@ class ProductViewModel : ViewModel() {
 
                 // Add the new product to the cart
                 val newCart =
-                    currentCart + mapOf("product" to productDetails, "count" to 1)
+                    currentCart + mapOf("product" to productDetails)
                 // Update the cart field in the document
                 transaction.update(userDocRef, "cart", newCart)
             }
@@ -433,8 +441,48 @@ class ProductViewModel : ViewModel() {
         return response
     }
 
-    fun removeProductFromFirebaseCart(pid:String){
+    fun removeProductFromFirebaseCart(pid:String,onComplete: (Boolean) -> Unit){
+        val tempList = mutableListOf<ProductDetails>()
+        val userId = ApplicationClass.sharedPreferences?.getString("userId", "")
+        val userDocRef: DocumentReference =
+            db.collection("users").document(userId ?: "User")
+        db.runTransaction { transaction ->
+            val userDoc = transaction.get(userDocRef)
+            if (userDoc.exists()) {
+                userDocRef.get().addOnSuccessListener {
+                    try {
+                        val result = it.data?.get("cart") as List<Map<Any, Any>>
 
+                        result.forEach { map ->
+                            val productMap = map["product"] as Map<*, *>
+                            val product = ProductDetails(
+                                _id = productMap["_id"] as String,
+                                description = (productMap["description"] as String),
+                                imageUrl = (productMap["imageUrl"] as String),
+                                price = (productMap["price"] as String),  // Assuming the price is stored as a double
+                                title = productMap["title"] as String,
+                                isFirebaseProduct = productMap["firebaseProduct"] as Boolean?
+                            )
+                            Log.e("Hereee data", map["product"].toString())
+                            if (pid == productMap["_id"]) {
+
+                            } else {
+                                tempList.add(product)
+                            }
+                        }
+                        userDocRef.update("cart", tempList)
+                        cartResponseData()
+                        onComplete(true)
+                    } catch (e: Exception) {
+                        onComplete(false)
+                        Log.e("exc", e.toString())
+                    }
+                }.addOnFailureListener {
+                    onComplete(true)
+                    Log.e("exc", it.message.toString())
+                }
+            }
+        }
     }
 
 
@@ -590,7 +638,7 @@ class ProductViewModel : ViewModel() {
                                 imageUrl = (productMap["imageUrl"] as String),
                                 price = (productMap["price"] as String),  // Assuming the price is stored as a double
                                 title = productMap["title"] as String,
-                                isFirebaseProduct = productMap["isFirebaseProduct"] as Boolean?
+                                isFirebaseProduct = productMap["firebaseProduct"] as Boolean?
                             )
                             Log.e("Hereee data", map["product"].toString())
                             if (data._id == productMap["_id"]) {
