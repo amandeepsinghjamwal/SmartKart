@@ -339,7 +339,6 @@ class ProductViewModel : ViewModel() {
             if (!userDoc.exists()) {
                 val newUserDoc = hashMapOf(
                     "cart" to listOf(mapOf("product" to productDetails, "count" to 1))
-                    // Add other fields as needed
                 )
                 transaction.set(userDocRef, newUserDoc)
             } else {
@@ -415,6 +414,10 @@ class ProductViewModel : ViewModel() {
             }
         })
         return response
+    }
+
+    fun removeProductFromFirebaseCart(pid:String){
+
     }
 
 
