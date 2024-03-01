@@ -127,6 +127,7 @@ class ProductListAdapter(
                     binding.addToCart.text = "Adding.."
 
                     if (data.isFirebaseProduct == true) {
+                        data.quantity = 1
                         viewModel.addProductToFirebaseCart(data){
                             if(it){
                                 (activity as HomeScreen).showSnackBar("${data.title} has been added to your cart")
@@ -137,6 +138,7 @@ class ProductListAdapter(
                                 binding.addToCart.text = "Go to cart"
                                 data.isInCart = true
                             }else{
+                                data.quantity = 0
                                 binding.addToCart.isEnabled = true
                                 (activity as HomeScreen).showSnackBar("Failed to add product to cart")
                             }
