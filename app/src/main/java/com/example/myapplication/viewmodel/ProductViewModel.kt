@@ -25,6 +25,8 @@ class ProductViewModel : ViewModel() {
 
     var db = Firebase.firestore
 
+    private var firebaseTotal: Double = 0.0
+
     val moshi = Moshi.Builder().build()
 
     var _wishlistProducts = MutableLiveData<List<WishlistResponseData>>()
@@ -101,17 +103,19 @@ class ProductViewModel : ViewModel() {
                 val userId = ApplicationClass.sharedPreferences?.getString("userId", "")
                 val userDocRef: DocumentReference =
                     db.collection("users").document(userId ?: "User")
-                /*db.runTransaction { transaction ->
+                db.runTransaction { transaction ->
                     val userDoc = transaction.get(userDocRef)
                     if (userDoc.exists()) {
                         userDocRef.get().addOnSuccessListener {
                             try {
-                                val result = it.data?.get("cart") as List<HashMap<String, String>>
+                                val result = it.data?.get("cart") as List<HashMap<Any, Any>>
                                 result.forEach { map ->
+                                    val productDetails = map["product"] as Map<*, *>
                                     products.forEach { prod ->
-                                        if (prod._id == map["productId"]) {
+                                        if (prod._id == productDetails["_id"]) {
                                             prod.cartItemId = "firebaseCart"
                                             prod.isInCart = true
+                                            return@forEach
                                         }
                                     }
                                 }
@@ -136,11 +140,11 @@ class ProductViewModel : ViewModel() {
                         _productList.value = tempList.shuffled()
                         Log.e("exc", _productList.value.toString())
                     }
-                }*/
+                }
 
-                tempList.addAll(products)
-                tempList.addAll(data)
-                _productList.value = tempList.shuffled()
+                /* tempList.addAll(products)
+                 tempList.addAll(data)
+                 _productList.value = tempList.shuffled()*/
 
             }
 
@@ -232,29 +236,42 @@ class ProductViewModel : ViewModel() {
                 userDocRef.get().addOnSuccessListener {
                     try {
                         val firebaseProductList = mutableListOf<CartResponseData>()
-                        val result = it.data?.get("cart") as List<Map<String, Any>>
-                        val jsonAdapter: JsonAdapter<FirebaseCartProduct> = moshi.adapter(FirebaseCartProduct::class.java)
+                        val result = it.data?.get("cart") as List<Map<Any, Any>>
 
-                        val product: FirebaseCartProduct? = jsonAdapter.fromJsonValue(result)
                         result.forEach { map ->
-                            firebaseProductList.add(
-                                CartResponseData(
-                                    null,
-                                    null,
-                                    null,
-                                    productDetails = product!!.product,
-                                    quantity =product.count.toInt(),
-                                    null
+                            val productMap = map["product"] as Map<*, *>?
+                            Log.e("Hereee data", map["product"].toString())
+                            if (productMap != null) {
+                                val product = ProductDetails(
+                                    _id = productMap["_id"] as String,
+                                    description = (productMap["description"] as String),
+                                    imageUrl = (productMap["imageUrl"] as String),
+                                    price = (productMap["price"] as String),  // Assuming the price is stored as a double
+                                    title = productMap["title"] as String,
+                                    isFirebaseProduct = productMap["isFirebaseProduct"] as Boolean?
                                 )
-                            )
+                                firebaseTotal += (product.price.toDouble() + map["count"].toString()
+                                    .toDouble())
+                                firebaseProductList.add(
+                                    CartResponseData(
+                                        "null",
+                                        "null",
+                                        10.99,
+                                        productDetails = product,
+                                        quantity = 1,
+                                        userId
+                                    )
+                                )
+                            }
                         }
                         tempList.addAll(data)
                         tempList.addAll(firebaseProductList)
                         _cartResponseData.value = tempList
+                        _totalPrice.value = (totalPrice.value ?: 0.0) + firebaseTotal
                     } catch (e: Exception) {
                         tempList.addAll(data)
                         _cartResponseData.value = tempList
-                        Log.e("exc", e.message.toString())
+                        Log.e("exc", e.toString())
                     }
                 }.addOnFailureListener {
                     tempList.addAll(data)
@@ -347,7 +364,7 @@ class ProductViewModel : ViewModel() {
 
                 // Add the new product to the cart
                 val newCart =
-                    currentCart + mapOf("productId" to productDetails, "count" to 1)
+                    currentCart + mapOf("product" to productDetails, "count" to 1)
                 // Update the cart field in the document
                 transaction.update(userDocRef, "cart", newCart)
             }
@@ -517,18 +534,82 @@ class ProductViewModel : ViewModel() {
             })
         }
     }
+
+    fun addToFirebaseWishlist(productDetails: ProductDetails, onComplete: (Boolean) -> Unit) {
+        val userId = ApplicationClass.sharedPreferences?.getString("userId", "")
+        val userDocRef: DocumentReference = db.collection("users").document(userId ?: "User")
+
+        db.runTransaction { transaction ->
+            val userDoc = transaction.get(userDocRef)
+            if (!userDoc.exists()) {
+                val newUserDoc = hashMapOf(
+                    "wishlist" to listOf(mapOf("product" to productDetails))
+                    // Add other fields as needed
+                )
+                transaction.set(userDocRef, newUserDoc)
+            } else {
+                val currentCart = userDoc.get("wishlist") as? List<Map<String, Any>> ?: emptyList()
+
+                // Add the new product to the cart
+                val newCart =
+                    currentCart + mapOf("product" to productDetails)
+                // Update the cart field in the document
+                transaction.update(userDocRef, "wishlist", newCart)
+            }
+
+            // Transaction success
+            true
+        }.addOnSuccessListener {
+            onComplete(true)
+        }.addOnFailureListener {
+            Log.e("Failure exception", it.message.toString())
+            onComplete(false)
+        }
+    }
+
+    fun removeFromFirebaseWishlist(data: ProductDetails, onComplete: (Boolean) -> Unit) {
+        val tempList = mutableListOf<ProductDetails>()
+        val userId = ApplicationClass.sharedPreferences?.getString("userId", "")
+        val userDocRef: DocumentReference =
+            db.collection("users").document(userId ?: "User")
+        db.runTransaction { transaction ->
+            val userDoc = transaction.get(userDocRef)
+            if (userDoc.exists()) {
+                userDocRef.get().addOnSuccessListener {
+                    try {
+                        val result = it.data?.get("wishlist") as List<Map<Any, Any>>
+
+                        result.forEach { map ->
+                            val productMap = map["product"] as Map<*, *>
+                            val product = ProductDetails(
+                                _id = productMap["_id"] as String,
+                                description = (productMap["description"] as String),
+                                imageUrl = (productMap["imageUrl"] as String),
+                                price = (productMap["price"] as String),  // Assuming the price is stored as a double
+                                title = productMap["title"] as String,
+                                isFirebaseProduct = productMap["isFirebaseProduct"] as Boolean?
+                            )
+                            Log.e("Hereee data", map["product"].toString())
+                            if (data._id == productMap["_id"]) {
+
+                            } else {
+                                tempList.add(product)
+                            }
+                        }
+                        userDocRef.update("wishlist", tempList)
+                        onComplete(true)
+                    } catch (e: Exception) {
+                        onComplete(false)
+                        Log.e("exc", e.toString())
+                    }
+                }.addOnFailureListener {
+                    onComplete(true)
+                    Log.e("exc", it.message.toString())
+                }
+            }
+        }
+    }
 }
 
-//class ProductViewModelFactory(
-//    private val productDao: ProductDao
-//) : ViewModelProvider.Factory {
-//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//        if (modelClass.isAssignableFrom(ProductViewModel::class.java)) {
-//            @Suppress("UNCHECKED_CAST")
-//            return ProductViewModel(productDao) as T
-//        }
-//        throw IllegalArgumentException("Unknown ViewModel class")
-//    }
-//}
 
 data class FirebaseCartProduct(val count: String, val product: ProductDetails)
