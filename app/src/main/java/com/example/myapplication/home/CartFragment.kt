@@ -46,7 +46,7 @@ class CartFragment : Fragment() {
         }
 
         binding.placeOrderButton.isEnabled=false
-        viewModel.cartResponseData()
+//        viewModel.cartResponseData()
         binding.cartRecView.adapter = adapter
         viewModel.cartResponseData.observe(viewLifecycleOwner) {
             adapter.submitList(it)

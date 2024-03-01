@@ -45,32 +45,63 @@ class ProductListAdapter(
                     (activity as HomeScreen).showSnackBar("Adding to wishlist...")
                     binding.addToWishlist.isClickable = false
                     if (data.isWishlisted == false) {
-                        val dat = viewModel.addToWishlist(data._id)
-                        dat.observe(lifecycleOwner) {
-                            if (it != "fail") {
-                                binding.addToWishlist.isClickable = true
-                                (activity as HomeScreen).showSnackBar("${data.title} is added to wishlist")
-                                binding.addToWishlist.setImageResource(R.drawable.wishlisted)
-                                data.isWishlisted = true
-                                data.watchListId = it
-                            } else {
-                                binding.addToWishlist.isClickable = true
-                                (activity as HomeScreen).showSnackBar("Error adding to wishlist")
+                        if (data.isFirebaseProduct == true) {
+                            val dataCopy = data.copy(watchListItemId = "id")
+                            viewModel.addToFirebaseWishlist(dataCopy) {
+                                if (it) {
+                                    binding.addToWishlist.isClickable = true
+                                    (activity as HomeScreen).showSnackBar("${data.title} is added to wishlist")
+                                    binding.addToWishlist.setImageResource(R.drawable.wishlisted)
+                                    data.isWishlisted = true
+                                    data.watchListId = "it"
+                                } else {
+                                    binding.addToWishlist.isClickable = true
+                                    (activity as HomeScreen).showSnackBar("Error adding to wishlist")
+                                }
+                            }
+                        } else {
+                            val dat = viewModel.addToWishlist(data._id)
+                            dat.observe(lifecycleOwner) {
+                                if (it != "fail") {
+                                    binding.addToWishlist.isClickable = true
+                                    (activity as HomeScreen).showSnackBar("${data.title} is added to wishlist")
+                                    binding.addToWishlist.setImageResource(R.drawable.wishlisted)
+                                    data.isWishlisted = true
+                                    data.watchListId = it
+                                } else {
+                                    binding.addToWishlist.isClickable = true
+                                    (activity as HomeScreen).showSnackBar("Error adding to wishlist")
+                                }
                             }
                         }
-                    } else {
+                    }else {
                         (activity as HomeScreen).showSnackBar("Removing from wishlist...")
-                        val dat = viewModel.removeFromWishlist(data.watchListId)
-                        dat.observe(lifecycleOwner) {
-                            if (it == 200) {
-                                binding.addToWishlist.setImageResource(R.drawable.wishlist_stroked)
-                                (activity as HomeScreen).showSnackBar("${data.title} is removed from wishlist")
-                                data.isWishlisted = false
-                                data.watchListId = null
-                                binding.addToWishlist.isClickable = true
-                            } else {
-                                (activity as HomeScreen).showSnackBar("Error removing from wishlist")
-                                binding.addToWishlist.isClickable = true
+                        if (data.isFirebaseProduct == true) {
+                            viewModel.removeFromFirebaseWishlist(data) {
+                                if (it) {
+                                    binding.addToWishlist.setImageResource(R.drawable.wishlist_stroked)
+                                    (activity as HomeScreen).showSnackBar("${data.title} is removed from wishlist")
+                                    data.isWishlisted = false
+                                    data.watchListId = null
+                                    binding.addToWishlist.isClickable = true
+                                } else {
+                                    (activity as HomeScreen).showSnackBar("Error removing from wishlist")
+                                    binding.addToWishlist.isClickable = true
+                                }
+                            }
+                        } else {
+                            val dat = viewModel.removeFromWishlist(data.watchListId)
+                            dat.observe(lifecycleOwner) {
+                                if (it == 200) {
+                                    binding.addToWishlist.setImageResource(R.drawable.wishlist_stroked)
+                                    (activity as HomeScreen).showSnackBar("${data.title} is removed from wishlist")
+                                    data.isWishlisted = false
+                                    data.watchListId = null
+                                    binding.addToWishlist.isClickable = true
+                                } else {
+                                    (activity as HomeScreen).showSnackBar("Error removing from wishlist")
+                                    binding.addToWishlist.isClickable = true
+                                }
                             }
                         }
                     }
